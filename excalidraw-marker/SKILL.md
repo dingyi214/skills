@@ -1,56 +1,50 @@
 ---
 name: excalidraw-marker
-description: Apply the **marker** look to Excalidraw diagrams — Excalidraw native color **pairs** (saturated stroke + light same-hue fill), extra-bold solid rounded strokes, pure black/white text & lines, hand-drawn font. Use when drawing a new `.excalidraw`, or restyling an existing diagram to the house style; triggers on "marker 风", "excalidraw 风格 / 上色", "重画 / 重写 .excalidraw".
+description: >-
+  Apply the **marker** look and **compose** Excalidraw diagrams from **pair**-colored
+  **atoms**. Use when drawing or restyling a `.excalidraw`, or when the user mentions
+  marker 风, excalidraw 风格 / 上色, 重画 / 重写 .excalidraw, or house-style diagrams.
 ---
 
-# 卡通 Marker 风
+# Marker
 
-A shape's stroke and fill are always a **pair** — same hue, a saturated stroke plus its light fill, drawn from Excalidraw's native palette. Text and lines are pure black on light, pure white on dark. The whole feel is **marker**: thick, bold, hand-drawn.
+A diagram is **marker** when every filled shape carries a native **pair** (saturated stroke + same-hue light fill), strokes are extra-bold solid rounded (`strokeWidth: 4`, `roughness: 0`, `roundness: {type: 3}`, `fillStyle: solid`), ink is pure black on light (white on a deep board), and type is Virgil (`fontFamily: 1`). Lines and arrows use the same ink and width; arrows use `roundness: {type: 2}`.
 
-## Two branches
+**Compose** — build the scene from the twelve **atoms** and the formulas in [`COMPONENTS.md`](COMPONENTS.md). A new need that is “same atom, different pair/size” is a **variant**, not a new component. Labels on nodes use the shape’s bound `text` (auto-centred); titles on large boards stay free-standing.
 
-### Drawing a new diagram
+Visual catalog: [`demos/composition-zh.excalidraw`](demos/composition-zh.excalidraw) · [`demos/composition-en.excalidraw`](demos/composition-en.excalidraw).
 
-Build every shape with the marker parameters:
+## Drawing a new diagram
 
-- **Pair** — `strokeColor` = a native saturated hue, `backgroundColor` = its light fill (table below). Same hue, always.
-- `strokeWidth: 4` (extra-bold) · `strokeStyle: solid` · `roughness: 0` · `roundness: {type: 3}`
-- `fillStyle: solid`
-- Text — pure `#000000` (on a light fill) or `#FFFFFF` (on a dark board). `fontFamily: 1` (Virgil, hand-drawn) for English and Chinese alike.
-- Lines / arrows — pure `#000000` / `#FFFFFF`, `strokeWidth: 4`, `roundness: {type: 2}` on arrows.
-- Labels go on the shape's bound `text` field (it auto-centres), not a separate text element — except titles over large background boards, which stay free-standing (a bound label would centre on the board and cover its content).
+1. Plan the layout, then place **atoms** / composed formulas from [`COMPONENTS.md`](COMPONENTS.md) — pick a **pair** per role, keep the diagram to 3–4 hues.
+2. After bound labels exist, set each bound text’s `strokeColor` to `#000000` (they inherit the shape stroke by default).
+3. **Completion criterion** — every rectangle / ellipse / diamond shows a native pair; every text is `#000000` or `#FFFFFF`; every stroke is width `4` · solid; every composed block matches a formula in `COMPONENTS.md` (no one-off restated styles).
 
-### Restyling an existing diagram
-
-Run `transform.py` against the file. It snaps every shape's colours to the nearest native **pair** and forces the marker stroke / text rules, preserving layout:
+## Restyling an existing diagram
 
 ```bash
 python3 transform.py path/to/diagram.excalidraw
 ```
 
-**Completion criterion** — every rectangle / ellipse / diamond carries a native pair (stroke = a saturated hue from the table, fill = its light fill), every text element is `#000000` or `#FFFFFF`, every stroke is `strokeWidth 4 · solid`. Check the file by listing distinct `backgroundColor` / `strokeColor` values; any value not in the table means a shape was missed.
+Snaps colours to the nearest native **pair** and forces marker stroke / text rules; layout and copy stay.
 
-## The native pairs
+**Completion criterion** — list distinct `backgroundColor` / `strokeColor` values; every coloured fill/stroke is in the pair table below (or ink black/white); every stroke is width `4` · solid.
 
-Excalidraw's own palette — stroke (saturated) + fill (light, same hue):
+## Pairs
 
 | stroke | fill | feel |
 |---|---|---|
-| `#e03131` red | `#ffc9c9` | error / critical |
-| `#e8590c` orange | `#ffd8a8` | async / event |
-| `#2f9e44` green | `#b2f2bb` | success / healthy |
-| `#0c8599` cyan | `#99e9f2` | data / store |
-| `#1971c2` blue | `#a5d8ff` | primary / link |
-| `#9c36b5` purple | `#eebefa` | service / middleware |
-| `#868e96` gray | `#e9ecef` | note / secondary / board |
-| `#1e1e1e` black | `#ffffff` | default text / border |
+| `#e03131` | `#ffc9c9` | error / critical |
+| `#e8590c` | `#ffd8a8` | async / event |
+| `#2f9e44` | `#b2f2bb` | success / healthy |
+| `#0c8599` | `#99e9f2` | data / store |
+| `#1971c2` | `#a5d8ff` | primary / link |
+| `#9c36b5` | `#eebefa` | service / middleware |
+| `#868e96` | `#e9ecef` | note / secondary / board |
+| `#1e1e1e` | `#ffffff` | default text / border |
 
-Source: Excalidraw's built-in design guide. Limit one diagram to 3–4 hues — a rainbow reads as noise.
-
-## Dark boards
-
-On a deep background (`#0F172A` and the like) flip the ink: white text, white lines, white strokes; cards on the board still take a light pair fill with their own saturated stroke and **black** label text.
+On a deep board, flip ink to white; cards on that board still use a light **pair** with **black** labels. Express depth by flipping ink on native pairs.
 
 ## When it looks wrong
 
-If a bound label shows the wrong colour, labels drift to wild coordinates, or long Chinese text blows up the canvas — the cause is one of four known gotchas in [`LESSONS.md`](LESSONS.md).
+Diagnose by symptom in [`LESSONS.md`](LESSONS.md) (bound-label colour, doubled labels, Chinese width blow-up, mermaid label drift).

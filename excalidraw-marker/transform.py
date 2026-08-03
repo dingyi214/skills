@@ -80,8 +80,12 @@ def transform(path):
             e["roughness"] = 0
             e["roundness"] = {"type": 3}
         elif t == "text":
-            e["strokeColor"] = "#000000"
-            e["fontFamily"] = 1
+            # Keep white ink (deep boards) and Cascadia (CodeBlock); else Virgil + black
+            ink = (e.get("strokeColor") or "").lower()
+            if ink not in ("#ffffff", "#fff"):
+                e["strokeColor"] = "#000000"
+            if e.get("fontFamily") != 3:
+                e["fontFamily"] = 1
             e["roughness"] = 0
         elif t in ("arrow", "line"):
             e["strokeColor"] = "#000000"
